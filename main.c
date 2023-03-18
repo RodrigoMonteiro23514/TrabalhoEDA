@@ -4,8 +4,11 @@
 int main()
 { 
 
+Cliente *listaCliente = NULL;
+Gestor *listaGestor = NULL;
+Meio *inicio = NULL;
 
-void menuPrincipal (Cliente **listaCliente, Gestor **listaGestor, Meio **inicio);
+menuPrincipal(&listaCliente, &listaGestor, &inicio);
 
 
 	

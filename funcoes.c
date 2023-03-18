@@ -2,9 +2,12 @@
 #include <string.h>
 #include "funcoes.h"
 
+//txt, wb
+//registo   !!!!!!!!!!!!!!!!!!!
+//lista decrescente autonomia
 
-//Guardar em txt e binario??
-int guardarMeios(Meio* inicio) //voltar a escrever esta função
+//Guardar em txt e binario -> wb
+int guardarMeios(Meio* inicio) 
 {FILE* fp;
  fp = fopen("meios.txt","w");
  if (fp!=NULL)
@@ -39,21 +42,16 @@ printf("5 - Sair\n");
 printf("Opcao:\n");
 scanf("%d",&op);
 
-switch(op)
-{ case 1: system("clear");
-          printf("1 - Adicionar Cliente \n");
-          printf("2 - Remover Cliente \n");
-          printf("3 - Alterar Dados Cliente \n");
-          printf("4 - Voltar \n");
-          scanf("%d", &op);// duvida se é aqui ou no menu cliente
-          menuCliente(*listaCliente); 
+do {
+  switch(op)
+{ case 1: menuCliente(listaCliente, listaGestor, inicio); 
           break;
 
   case 2: system("clear");
           printf("1 - Adicionar Gestor \n");
           printf("2 - Remover Gestor \n");
           printf("3 - Voltar \n");
-          menuGestor(*listaGestor);
+          menuGestor(listaGestor);
           break;
 
   case 3: system("clear");
@@ -61,34 +59,43 @@ switch(op)
           printf("2 - Remover Meio \n");
           printf("3 - Alterar Dados Meio \n");
           printf("4 - Voltar \n");
-          menuMeio(*inicio);
+          menuMeio(inicio);
           break;         
   
   case 4: system("clear");
           // adicionar menu aluguer
           break;
 
-  case 5: break;
+  case 5: continue;
 
   default: printf("Escolha invalida! \n\n");
-           menuPrincipal(*listaCliente, *listaGestor, *inicio);
+           menuPrincipal(listaCliente, listaGestor, inicio);
            break;
+}
 
-} while ( op != 0);
+} while ( op != 5);
 
 }
 
 
 
 
-void menuCliente(Cliente **listaCliente)
+void menuCliente(Cliente **listaCliente, Gestor **listaGestor, Meio **inicio)
 {
+  Cliente *cliente = *listaCliente;
   int op;
   int nif;
   float saldo;
   char nome[50];
   char endereco[100]; 
   do {
+  system("clear");
+  printf("1 - Adicionar Cliente \n");
+  printf("2 - Remover Cliente \n");
+  printf("3 - Alterar Dados Cliente \n");
+  printf("4 - Voltar \n");
+  printf("Opcao:\n");
+  scanf("%d", &op);
   switch(op) 
   { case 1: printf("Digite o NIF do cliente: \n");
             scanf("%d", &nif);
@@ -98,24 +105,31 @@ void menuCliente(Cliente **listaCliente)
             scanf("%s", nome);
             printf("Digite o endereço do cliente: \n");
             scanf("%s", endereco); 
-            adicionarCliente(&listaCliente, nif, saldo, nome, endereco); // & ou *
+            printList(cliente);
+            adicionarCliente(listaCliente, nif, saldo, nome, endereco);
+            printf("Cliente adicionado! \n");
+            printf("Press a button...");
             break;
 
-    case 2: listarClientes(listaCliente);
+    case 2: listarClientes(cliente);
             printf("Digite o NIF do cliente: \n");
             scanf("%d", &nif);
-            removerCliente(&listaCliente, nif);   
+            removerCliente(listaCliente, nif);   
+            printf("Cliente removido! \n");
             break;
 
     case 3: printf("Qual o novo endereco que deseja? \n");
             scanf("%s", endereco);
-            alterarCliente(&listaCliente, nif, saldo, nome[50], endereco[100]);
+            alterarCliente(listaCliente, nif, saldo, nome, endereco);
+            printf("Cliente alterado! \n");
             break;
 
-    case 4: continue;      
+    case 4: system("clear");
+            menuPrincipal(listaCliente, listaGestor, inicio);
+                  
   }
 
-} while ( op != 0);
+} while ( op != 4);
 
 }
 
@@ -124,6 +138,7 @@ void menuCliente(Cliente **listaCliente)
 
 void menuGestor(Gestor **listaGestor)
 {
+  Gestor *gestor = *listaGestor;
   int op;
   int idGestor;
   char nomeGestor[50];
@@ -133,13 +148,13 @@ void menuGestor(Gestor **listaGestor)
             scanf("%d", &idGestor);
             printf("Digite o nome do gestor: \n");
             scanf("%s", nomeGestor);
-            adicionarGestor(&listaGestor, nomeGestor[50], idGestor);
+            adicionarGestor(listaGestor, nomeGestor, idGestor);
             break;
 
-    case 2: listarGestores(listaGestor);
+    case 2: listarGestores(gestor);
             printf("Digite o id do gestor que deseja remover: \n");
             scanf("%d", &idGestor);
-            removerGestor(*listaGestor, nomeGestor[50], idGestor);
+            removerGestor(listaGestor, nomeGestor, idGestor);
             break;
 
     case 3: continue;
@@ -151,7 +166,7 @@ void menuGestor(Gestor **listaGestor)
 
 
 
-void menuMeio(Meio *inicio)
+void menuMeio(Meio **inicio)
 {
 int op;
 int codigo;
@@ -169,17 +184,17 @@ do {
 	          scanf("%f",&autonomia);
             printf("Qual o custo por hora? \n");
             scanf("%f", &custo_por_hora);
-            adicionarMeio(&inicio, codigo, tipo[50], autonomia, custo_por_hora);
+            adicionarMeio(inicio, codigo, tipo, autonomia, custo_por_hora);
             break;
 
     case 2: printf("Digite o codigo do meio: \n");
             scanf("%d", &codigo);
-            removerMeio(&inicio, codigo);
+            removerMeio(inicio, codigo);
             break;
 
     case 3: printf("Qual a autonomia do meio? \n");
             scanf("%f", autonomia);
-            alterarMeio(&inicio, codigo, autonomia);
+            alterarMeio(inicio, codigo, autonomia);
             break;
 
     case 4: continue;      
@@ -582,7 +597,7 @@ Meio* removerMeio(Meio* inicio, int cod)
 //---------------------------Aluguer-------------------------------------------
 
 //Procurar Cliente para Registo de Aluguer
-Cliente* procurarCliente(Cliente* listaCliente, int nif)
+Cliente* procurarCliente(Cliente** listaCliente, int nif)
 {
   Cliente* atualMeio = listaCliente;
 
@@ -601,7 +616,7 @@ Cliente* procurarCliente(Cliente* listaCliente, int nif)
 
 
  //Procurar Meio para Registo de Aluguer
-Meio* procurarMeio(Meio* inicio, int codigo)
+Meio* procurarMeio(Meio** inicio, int codigo)
 {
   Meio* atualMeio = inicio;
 
@@ -621,11 +636,11 @@ Meio* procurarMeio(Meio* inicio, int codigo)
 
 
 
-/*
+
 //Registo Aluguer
 void registarAluguer(int nif, int codigo, int tempo)
 {
-  Cliente *cliente = procurarCliente(cliente, nif)//dúvidas neste argumento
+  Cliente *cliente = procurarCliente(cliente, nif);
   Meio *inicio = procurarMeio(inicio, codigo);
 
   if (cliente == NULL) 
@@ -634,26 +649,26 @@ void registarAluguer(int nif, int codigo, int tempo)
     return;
   }
 
-  if (meio == NULL)
+  if (inicio == NULL)
   {
     printf("Meio de mobilidade nao encontrado!\n");
     return;
   }
 
-  if (meio->estado != disponivel) // ver a variavel estado
+  if (inicio->estado != true) 
   {
     printf("Meio de mobilidade nao esta disponivel para aluguer!\n");
     return;
   }
 
    
-   if (cliente->saldo < tempo * meio->custo_por_hora) 
+   if (cliente->saldo < tempo * inicio->custo_por_hora) 
    {
     printf("Saldo insuficiente para alugar meio de mobilidade!\n");
     return;
    }
-   else cliente->saldo -= tempo * meio->custo_por_hora;
-   meio->estado = alugado;
+   else cliente->saldo -= tempo * inicio->custo_por_hora;
+   inicio->estado = true;
 
 
    //falta criar novo registo de aluguer, adicioná-lo à lista(criar lista) e fazer printf
@@ -664,5 +679,5 @@ void registarAluguer(int nif, int codigo, int tempo)
 
 }
 
-*/
+
 
